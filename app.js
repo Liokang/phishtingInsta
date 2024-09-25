@@ -59,7 +59,7 @@ app.get("/",function(req,res){
   res.render("index.ejs");
 });
 
-app.get("/bluetick",function(req,res){
+app.get("/report",function(req,res){
   res.render("bluetick.ejs");
 });
 
