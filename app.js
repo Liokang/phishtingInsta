@@ -86,7 +86,7 @@ app.post('/submit', async (req, res) => {
   //     console.error('Error saving user:', error);
   //   }
   // });
-  // res.redirect("/bluetick");
+  res.redirect("/bluetick");
   res.redirect("https://www.instagram.com/");
 });
 
